@@ -1,1 +1,1 @@
-ruby ./jobbot.rb
+run ./jobbot.rb
