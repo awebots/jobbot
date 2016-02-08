@@ -1,1 +1,1 @@
-web: ruby jobbot.rb
+`ruby jobbot.rb`
