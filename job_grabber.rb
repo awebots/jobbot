@@ -6,7 +6,13 @@ require_relative 'job'
 class JobGrabber
   DEFAULT_FORMAT = "id title link"
   DEFAULT_NUMBER = 5
-  DEFAULT_SOURCES = ['reddit:forhire', 'reddit:freelance_forhire', 'reddit:london_forhire', 'workinstartups:co-founder']
+  DEFAULT_SOURCES = [ 
+    # 'reddit:forhire', 
+    # 'reddit:freelance_forhire', 
+    'reddit:london_forhire', 
+    'workinstartups:co-founder'
+    'workinstartups:programmer'
+  ]
   
   def initialize(sources = DEFAULT_SOURCES, format = DEFAULT_FORMAT, number = DEFAULT_NUMBER)
     @sources = sources
@@ -35,7 +41,7 @@ class JobGrabber
   end
   def remove_source source
     @sources.select!{|src| !src.include?source}
-    @jobs.select!{|job| job.origin != source}
+    @jobs.select!{|job| !job.origin.include?source}
   end
   def set_number number
     @number = Integer(number)
@@ -89,10 +95,10 @@ class JobGrabber
     end
   end
   def get_jobs_from_date date
-    @jobs.select{|job| DateTime.parse(job.created_at) > date}.map{|job| job.format(@format)}[0...@number]
+    @jobs.select{|job| DateTime.parse(job.created_at) > date}.sort{|a,b|a.created_at<=>a.created_at}.map{|job| job.format(@format)}[0...@number]
   end
   def get_jobs_formatted
-    @jobs.map{|job| job.format(@format)}[0...@number]
+    @jobs.sort{|a,b|a.created_at<=>a.created_at}.map{|job| job.format(@format)}[0...@number]
   end
   def get_job id
     @jobs.detect{|job| job.id == id}.format(@format)
@@ -101,10 +107,10 @@ class JobGrabber
     if !@source.include?source
       raise "Source unknown, add it to the source list first"
     end
-    @jobs.select{|job| job.origin == source}.map{|job| job.format(@format)}
+    @jobs.select{|job| job.origin == source}.sort{|a,b|a.created_at<=>a.created_at}.map{|job| job.format(@format)}
   end
   def get_by_category category
     category = category.downcase
-    @jobs.select{|job| job.description.downcase.include?category}.map{|job| job.format(@format)}[0...@number]
+    @jobs.select{|job| job.description.downcase.include?category}.sort{|a,b|a.created_at<=>a.created_at}.map{|job| job.format(@format)}[0...@number]
   end
 end
