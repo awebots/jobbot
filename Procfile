@@ -1,1 +1,1 @@
-web: bash -c 'ruby jobbot.rb'
+console: ruby jobbot.rb
