@@ -8,37 +8,91 @@ require_relative 'job_grabber'
 class JobBot < SlackRubyBot::Bot
   def initialize (options = {})
     @@job_grabber = JobGrabber.new
-    p @@job_grabber
   end
   # source management
   match /^add source (?<source>\S*)$/ do |client, data, match|
-    @@job_grabber.add_source match[:source]
+    source = match[:source]
+    @@job_grabber.add_source source
     client.say(text: @@job_grabber.get_sources, channel: data.channel)
   end
   match /^remove source (?<source>\S*)$/ do |client, data, match|
     source = match[:source]
     @@job_grabber.remove_source source
-    client.say(text: "Removed " + source)
+    client.say(text: "Removed source: " + source, channel: data.channel)
   end
-  # job queries
-  match /^jobs in (?<category>\S*)$/ do |client, data, match|
-    client.say(text: match[:category], channel: data.channel)
-  end
-  match /^jobs (from )?(?<date>\w*)$/ do |client, data, match|
-    raw_date = match[:date].gsub("_"," ")
-    from_date = Chronic.parse(raw_date)
-    client.say(text: "Jobs from: " + from_date, channel: data.channel)
-  end
-
   command 'sources' do |client, data, match|
     reply = "Sources:\n" + @@job_grabber.get_sources.join("\n")
     client.say(text: reply, channel: data.channel)
   end
-  command 'hello' do |client, data, match|
-    client.say(text: 'Hello there!!!', channel: data.channel)
+  match /^jobs limit:(?<number>\w*)$/ do |client, data, match|
+    number = match[:number]
+    @@job_grabber.set_number(number)
+    reply = "Job limit set to " + number
+    client.say(text: reply, channel: data.channel)
+  end
+  # job queries
+  match /^jobs src:(?<source>\w*)$/ do |client, data, match|
+    source = match[:source]
+    p "hello"
+    jobs = @@job_grabber.get_by_source(source).join("\n\n")
+    reply = "Jobs from " + source + "\n" + jobs
+    client.say(text: reply, channel: data.channel)
+  end
+  match /^jobs in:(?<category>\S*)$/ do |client, data, match|
+    category = match[:category]
+    jobs = @@job_grabber.get_by_category(category).join("\n\n")
+    reply = "Jobs in " + category + ":\n" + jobs
+    client.say(text: reply, channel: data.channel)
+  end
+  match /^jobs (from:)?(?<date>\w*)$/ do |client, data, match|
+    raw_date = match[:date].gsub("_"," ")
+    Time.zone = "UTC"
+    Chronic.time_class = Time.zone
+    date = Chronic.parse(raw_date)
+    jobs = @@job_grabber.get_jobs_from_date(date).join("\n")
+    client.say(text: "Jobs from: " + date.to_s + "\n"+ jobs, channel: data.channel)
+  end
+  
+  command 'jobs count' do |client, data, match|
+    reply = @@job_grabber.get_job_count.to_s + " jobs"
+    client.say(text: reply, channel: data.channel)
+  end
+  match /^job (?<id>\w*)$/ do |client, data, match|
+    @@job_grabber.set_format "id title link description"
+    job = @@job_grabber.get_job(match[:id])
+    @@job_grabber.set_format JobGrabber::DEFAULT_FORMAT
+    client.say(text: "Job: " + job, channel: data.channel)
   end
   command 'jobs' do |client, data, match|
-    client.say(text: 'for hire', channel: data.channel)
+    jobs = @@job_grabber.get_jobs_formatted.join("\n")
+    reply = "Jobs:\n" + jobs
+    client.say(text: reply, channel: data.channel)
+  end
+
+  command 'hello' do |client, data, match|
+    reply = "Hey there, here are a few commands to get you started, use `help` for more :)" + "\n"
+    reply += "`jobs` gives you a set of jobs" + "\n"
+    reply += "`job <id>` gives you a more in-depth description of the job" + "\n"
+    reply += "`jobs count` does what is says on the tin" + "\n"
+    client.say(text: reply, channel: data.channel)
+  end
+  command 'help' do |client, data, match|
+    reply = "There are a bunch of commands: " + "\n"
+    reply += "`jobs` gives you a set of jobs" + "\n"
+    reply += "`job <id>` gives you a more in-depth description of the job" + "\n"
+    reply += "`jobs count` does what is says on the tin" + "\n\n"
+    reply += "Advanced features" + "\n"
+    reply += "Filtering: " + "\n"
+    reply += "`jobs in:<category>` filters by keyword present in the description of jobs (eg. `jobs in mysql`)" +"\n"
+    reply += "`jobs from:<date>` or `jobs <date>` gets jobs posted since 'date' (eg. `jobs from 01/01/2016` or `jobs today`)" + "\n"
+    reply += "`jobs src:<source>` will filter to an individual source without removing/adding all the sources" + "\n"
+    reply += "Modifying the sources: " + "\n"
+    reply += "`sources` shows you where we're getting the jobs from" + "\n"
+    reply += "`add source` with the syntax `reddit:<subreddit>` or `workinstartups:<category>`" +"\n"
+    reply += "`remove source <name>` removes any source that contains `name` eg. `remove source reddit` will delete `reddit:for_hire`, `reddit:freelance_forhire`..." +"\n"
+    reply += "Extra settings" + "\n"
+    reply += "`jobs limit:<number>` sets the maximum number of jobs displayed per command" + "\n"
+    client.say(text: reply, channel: data.channel)
   end
 end
 

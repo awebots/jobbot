@@ -1,40 +1,110 @@
-require 'redd'
 require 'dotenv'
 Dotenv.load
-
-# r = Redd.it(:userless, ENV["REDDIT_CLIENT"], ENV["REDDIT_SECRET"], user_agent: "TestBot v1.0.0")
-# r.authorize!
-# for_hire = r.subreddit_from_name("forhire")
-# puts for_hire.display_name
-# puts for_hire.public_description
-# new_posts = for_hire.get_new
-# hiring = new_posts.select{|obj| obj[:title].include?"Hiring"}
-# puts hiring.first.keys
-
+require 'redd'
+require 'workinstartups-api'
+require_relative 'job'
 class JobGrabber
-  def initialize(sources=[], from_date=0)
-    if sources.count == 0
-      @sources = ['reddit:forhire', 'reddit:freelance_forhire', 'reddit:london_for_hire', 'workinstartups:co-founder']
-    else
-      @sources = sources
+  DEFAULT_FORMAT = "id title link"
+  DEFAULT_NUMBER = 5
+  DEFAULT_SOURCES = ['reddit:forhire', 'reddit:freelance_forhire', 'reddit:london_forhire', 'workinstartups:co-founder']
+  
+  def initialize(sources = DEFAULT_SOURCES, format = DEFAULT_FORMAT, number = DEFAULT_NUMBER)
+    @sources = sources
+    @format = format
+    @jobs = Array.new
+    @formatted_jobs = Array.new
+    @number = number
+    if @sources.join('').include?"reddit"
+      @r ||= Redd.it(:userless, ENV["REDDIT_CLIENT"], ENV["REDDIT_SECRET"], user_agent: "JobGrabber v1.0.0")
+      @r.authorize!
+      store_reddit_jobs
     end
-    @from_date = from_date
-  end
-  def set_from_date date
-    @from_date = date
+    if @sources.join('').include?"workinstartups"
+      store_workinstartups_jobs
+    end
+    p @jobs.count.to_s + " jobs"
   end
   def add_source source
     @sources.push(source)
-  end
-  def remove_source source
-    if @sources.include?source
-      @source.delete(source)
+    if source.include?"reddit"
+      store_reddit_jobs
+    end
+    if source.include?"workinstartups"
+      store_workinstartups_jobs
     end
   end
-  def get_sources
-    @sources
+  def remove_source source
+    @sources.select!{|src| !src.include?source}
+    @jobs.select!{|job| job.origin != source}
   end
-  def get_jobs
+  def set_number number
+    @number = Integer(number)
+  end
+  def get_sources with_count = false
+    unless with_count
+      @sources
+    end
 
+  end
+  def set_format format
+    @format = format
+  end
+  def get_job_count
+    @jobs.count
+  end
+  def store_reddit_jobs
+    @sources.each do |s|
+      if s.start_with?"reddit"
+        subreddit_name = s.split(":").last
+        subreddit = @r.subreddit_from_name(subreddit_name)
+        last_job = @jobs.select{|job| job.origin == s}.last
+        last_create = (last_job.nil?)? false : DateTime.parse(last_job.created_at)
+        hiring = subreddit.get_new.select{|obj| obj[:title].downcase.include?"hiring"}
+        hiring.each do |job|
+          if last_create and Time.at(job[:created_utc]).to_datetime < last_create
+            break
+          end
+          @jobs << Job.new(s, job[:id], job[:title], job[:selftext], Time.at(job[:created_utc]).to_datetime.to_s, "http://reddit.com" + job[:permalink])
+        end
+      end
+    end
+    @jobs
+  end
+  def store_workinstartups_jobs
+    @sources.each do |s|
+      if s.start_with?"workinstartups"
+        workinstartups_name = s.split(":").last
+        category = WorkInStartupsAPI.category_from_string(workinstartups_name)
+        api = WorkInStartupsAPI.new(category, 100)
+        last_job = @jobs.select{|job| job.origin == s}.last
+        last_create = (last_job.nil?)? false : DateTime.parse(last_job.created_at)
+        jobs = api.get_latest(false)
+        jobs.each do |job|
+          if last_create and DateTime.parse(job["mysql_date"]) < last_create
+            break
+          end
+          @jobs << Job.new(s, job["id"], job["title"], job["description"], DateTime.parse(job["mysql_date"]).to_s, "http://workinstartups.com/job-board/job/" + job["id"])
+        end
+      end
+    end
+  end
+  def get_jobs_from_date date
+    @jobs.select{|job| DateTime.parse(job.created_at) > date}.map{|job| job.format(@format)}[0...@number]
+  end
+  def get_jobs_formatted
+    @jobs.map{|job| job.format(@format)}[0...@number]
+  end
+  def get_job id
+    @jobs.detect{|job| job.id == id}.format(@format)
+  end
+  def get_by_source source
+    if !@source.include?source
+      raise "Source unknown, add it to the source list first"
+    end
+    @jobs.select{|job| job.origin == source}.map{|job| job.format(@format)}
+  end
+  def get_by_category category
+    category = category.downcase
+    @jobs.select{|job| job.description.downcase.include?category}.map{|job| job.format(@format)}[0...@number]
   end
 end

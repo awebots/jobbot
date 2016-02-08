@@ -63,6 +63,7 @@ GEM
     websocket-driver (0.6.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
+    workinstartups-api (0.0.5)
 
 PLATFORMS
   ruby
@@ -72,6 +73,7 @@ DEPENDENCIES
   dotenv (~> 2.1.0)
   redd (~> 0.7.0)
   slack-ruby-bot
+  workinstartups-api (~> 0.0.5)
 
 BUNDLED WITH
    1.11.2
