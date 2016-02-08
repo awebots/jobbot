@@ -28,7 +28,6 @@ class JobGrabber
     if @sources.join('').include?"workinstartups"
       store_workinstartups_jobs
     end
-    p @jobs.count.to_s + " jobs"
   end
   def add_source source
     @sources.push(source)

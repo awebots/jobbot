@@ -26,6 +26,7 @@ To deploy on heroku you will need to set the variables either through the panel 
 - `jobs` gives you a set of jobs
 - `job <id>` gives you a more in-depth description of the job
 - `jobs count` does what is says on the tin
+- `jobs refresh` will refetch all the jobs from the currently active sources
 
 `help` will print the following:
 

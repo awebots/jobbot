@@ -30,6 +30,13 @@ class JobBot < SlackRubyBot::Bot
     reply = "Job limit set to " + number
     client.say(text: reply, channel: data.channel)
   end
+  command 'jobs refresh' do |client, data, match|
+    client.say(text: "Refreshing the jobs, please wait...", channel: data.channel)
+    sources = @@job_grabber.get_sources
+    @@job_grabber = JobGrabber.new(sources)
+    reply = "Refreshed the jobs, there are now " + @@job_grabber.get_job_count.to_s + " jobs"
+    client.say(text: reply, channel: data.channel)
+  end
   # job queries
   match /^jobs src:(?<source>\w*)$/ do |client, data, match|
     source = match[:source]
@@ -72,13 +79,15 @@ class JobBot < SlackRubyBot::Bot
     reply += "`jobs` gives you a set of jobs" + "\n"
     reply += "`job <id>` gives you a more in-depth description of the job" + "\n"
     reply += "`jobs count` does what is says on the tin" + "\n"
+    reply += "`jobs refresh` will refetch all the jobs from the currently active sources" + "\n"
     client.say(text: reply, channel: data.channel)
   end
   command 'help' do |client, data, match|
     reply = "There are a bunch of commands: " + "\n"
     reply += "`jobs` gives you a set of jobs" + "\n"
     reply += "`job <id>` gives you a more in-depth description of the job" + "\n"
-    reply += "`jobs count` does what is says on the tin" + "\n\n"
+    reply += "`jobs count` does what is says on the tin" + "\n"
+    reply += "`jobs refresh` will refetch all the jobs from the currently active sources" + "\n\n"
     reply += "Advanced features" + "\n"
     reply += "Filtering: " + "\n"
     reply += "`jobs in:<category>` filters by keyword present in the description of jobs (eg. `jobs in mysql`)" +"\n"
