@@ -1,1 +1,1 @@
-console: ruby jobbot.rb
+bot: ruby jobbot.rb
