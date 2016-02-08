@@ -10,17 +10,17 @@ class JobBot < SlackRubyBot::Bot
     @@job_grabber = JobGrabber.new
   end
   # source management
-  match /^add source (?<source>\S*)$/ do |client, data, match|
+  match /^add src:(?<source>\S*)$/ do |client, data, match|
     source = match[:source]
     @@job_grabber.add_source source
     client.say(text: @@job_grabber.get_sources, channel: data.channel)
   end
-  match /^remove source (?<source>\S*)$/ do |client, data, match|
+  match /^remove src:(?<source>\S*)$/ do |client, data, match|
     source = match[:source]
     @@job_grabber.remove_source source
     client.say(text: "Removed source: " + source, channel: data.channel)
   end
-  command 'sources' do |client, data, match|
+  command 'src' do |client, data, match|
     reply = "Sources:\n" + @@job_grabber.get_sources.join("\n")
     client.say(text: reply, channel: data.channel)
   end
@@ -82,12 +82,12 @@ class JobBot < SlackRubyBot::Bot
     reply += "Advanced features" + "\n"
     reply += "Filtering: " + "\n"
     reply += "`jobs in:<category>` filters by keyword present in the description of jobs (eg. `jobs in mysql`)" +"\n"
-    reply += "`jobs from:<date>` or `jobs <date>` gets jobs posted since 'date' (eg. `jobs from 01/01/2016` or `jobs today`)" + "\n"
+    reply += "`jobs from:<date>` or `jobs <date>` gets jobs posted since 'date' (eg. `jobs from 01/01/2016` or `jobs today`) NOTE: you can't have whitespaces so use underscores or hyphens instead" + "\n"
     reply += "`jobs src:<source>` will filter to an individual source without removing/adding all the sources" + "\n"
     reply += "Modifying the sources: " + "\n"
-    reply += "`sources` shows you where we're getting the jobs from" + "\n"
-    reply += "`add source` with the syntax `reddit:<subreddit>` or `workinstartups:<category>`" +"\n"
-    reply += "`remove source <name>` removes any source that contains `name` eg. `remove source reddit` will delete `reddit:for_hire`, `reddit:freelance_forhire`..." +"\n"
+    reply += "`src` shows you where we're getting the jobs from" + "\n"
+    reply += "`add src:<name>` with `name` in the form `reddit:<subreddit>` or `workinstartups:<category>`" +"\n"
+    reply += "`remove src:<name>` removes any source that contains `name` eg. `remove source reddit` will delete `reddit:for_hire`, `reddit:freelance_forhire`..." +"\n"
     reply += "Extra settings" + "\n"
     reply += "`jobs limit:<number>` sets the maximum number of jobs displayed per command" + "\n"
     client.say(text: reply, channel: data.channel)

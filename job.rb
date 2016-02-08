@@ -33,6 +33,9 @@ class Job
     if format.include?"description"
       formatted += "Text: " + @description
     end
+    if format.include?"created_at"
+      formatted += "Created at: " + @created_at
+    end
     formatted
   end
 end
