@@ -4,7 +4,7 @@ require 'redd'
 require 'workinstartups-api'
 require_relative 'job'
 class JobGrabber
-  DEFAULT_FORMAT = "id title link"
+  DEFAULT_FORMAT = "created_at id title link"
   DEFAULT_NUMBER = 5
   DEFAULT_SOURCES = [ 
     # 'reddit:forhire', 

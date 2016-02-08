@@ -21,6 +21,9 @@ class Job
   end
   def format format
     formatted =''
+    if format.include?"created_at"
+      formatted += "Date: " + @created_at + "\t"
+    end
     if format.include?"id"
       formatted += "id: " + @id + "\n"
     end
@@ -32,9 +35,6 @@ class Job
     end
     if format.include?"description"
       formatted += "Text: " + @description
-    end
-    if format.include?"created_at"
-      formatted += "Created at: " + @created_at
     end
     formatted
   end
