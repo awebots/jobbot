@@ -50,7 +50,6 @@ class JobGrabber
     unless with_count
       @sources
     end
-
   end
   def set_format format
     @format = format
