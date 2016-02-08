@@ -1,1 +1,1 @@
-`ruby jobbot.rb`
+web: bash -c 'ruby jobbot.rb'
