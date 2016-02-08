@@ -10,7 +10,7 @@ class JobGrabber
     # 'reddit:forhire', 
     # 'reddit:freelance_forhire', 
     'reddit:london_forhire', 
-    'workinstartups:co-founder'
+    'workinstartups:co-founder',
     'workinstartups:programmer'
   ]
   
