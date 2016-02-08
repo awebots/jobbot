@@ -33,7 +33,6 @@ class JobBot < SlackRubyBot::Bot
   # job queries
   match /^jobs src:(?<source>\w*)$/ do |client, data, match|
     source = match[:source]
-    p "hello"
     jobs = @@job_grabber.get_by_source(source).join("\n\n")
     reply = "Jobs from " + source + "\n" + jobs
     client.say(text: reply, channel: data.channel)
@@ -44,6 +43,10 @@ class JobBot < SlackRubyBot::Bot
     reply = "Jobs in " + category + ":\n" + jobs
     client.say(text: reply, channel: data.channel)
   end
+  command 'jobs count' do |client, data, match|
+    reply = @@job_grabber.get_job_count.to_s + " jobs"
+    client.say(text: reply, channel: data.channel)
+  end
   match /^jobs (from:)?(?<date>\w*)$/ do |client, data, match|
     raw_date = match[:date].gsub("_"," ")
     Time.zone = "UTC"
@@ -51,11 +54,6 @@ class JobBot < SlackRubyBot::Bot
     date = Chronic.parse(raw_date)
     jobs = @@job_grabber.get_jobs_from_date(date).join("\n")
     client.say(text: "Jobs from: " + date.to_s + "\n"+ jobs, channel: data.channel)
-  end
-  
-  command 'jobs count' do |client, data, match|
-    reply = @@job_grabber.get_job_count.to_s + " jobs"
-    client.say(text: reply, channel: data.channel)
   end
   match /^job (?<id>\w*)$/ do |client, data, match|
     @@job_grabber.set_format "id title link description"
