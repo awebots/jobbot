@@ -26,6 +26,10 @@ To deploy on heroku you will need to set the variables either through the panel 
 
 #Talking to the bot
 
+![](screenshots/jobs.png)
+![](screenshots/jobs_in.png)
+![](screenshots/job.png)
+
 `hello` will give you the following message:
 
 ##Basics

@@ -58,7 +58,7 @@ class JobBot < SlackRubyBot::Bot
     raw_date = match[:date].gsub("_"," ")
     Time.zone = "UTC"
     Chronic.time_class = Time.zone
-    date = Chronic.parse(raw_date)
+    date = Chronic.parse(raw_date, :context => :past)
     jobs = @@job_controller.get_jobs_from_date(date).join("\n")
     client.say(text: "Jobs from: " + date.to_s + "\n"+ jobs, channel: data.channel)
   end
