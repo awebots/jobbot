@@ -1,13 +1,19 @@
 # Ruby Job SlackBot 
 
-Integrates with Reddit and WorkInStartups to deliver jobs to people right in Slack.
+Integrates with Job APIs to deliver jobs to people right in Slack.
 
 
 # The code
 ##JobBot 
 JobBot is the SlackBot itself and handles the routing/matching/parsing of commands, it uses [slack-ruby-bot](https://github.com/dblock/slack-ruby-bot)
+##JobController
+JobController is the utility class, an instance of it is held by the JobBot class. It holds the jobs, sources and filters content before returning it.
 ##JobGrabber 
-JobGrabber is the utility class, an instance of it is held by the JobBot class. It holds the jobs, sources and filters content before returning it. It get jobs using [Redd](https://github.com/avinashbot/redd) and [workinstartups-api](https://github.com/HugoDF/workinstartups-api)
+JobGrabber is loops through sources and returns an array of all jobs found at specified sources
+##SrcGrabber
+SrcGrabber grabs jobs from a specified source, it uses the adapter pattern and has 2 adapters: `reddit.rb` and `workinstartups.rb`.
+##Adapters
+We have two adapters for Reddit and WorkInStartups, that use [Redd](https://github.com/avinashbot/redd) and [workinstartups-api](https://github.com/HugoDF/workinstartups-api), respectively.
 ##Job
 Job is the abstraction to create a unified API for jobs coming from Reddit and WorkInStartups, there is potential for turning this into a adaptor system for jobs coming from other services, it currently only has 6 fields: `origin`, `id`, `title`, `description`, `created_at` and `link`.
 
@@ -46,6 +52,6 @@ To deploy on heroku you will need to set the variables either through the panel 
 
 ## Copyright and License
 
-Copyright (c) 2015-2016, [Hugo Di Francesco](https://twitter.com/hugo__df) and [Awebots](http://www.awebots.com).
+Copyright (c) 2016, [Hugo Di Francesco](https://twitter.com/hugo__df) and [awebots](http://www.awebots.com).
 
 This project is licensed under the [MIT License](LICENSE.md).
