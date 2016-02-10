@@ -10,7 +10,7 @@ module Adapters
       hiring = api.get_latest(false)
       jobs = Array.new
       hiring.each do |job|
-        jobs << Job.new(source, job["id"], job["title"], job["description"], DateTime.parse(job["mysql_date"]).to_s, "http://workinstartups.com/job-board/job/" + job["id"])
+        jobs << Job.new('workinstartups:' + source, job["id"], job["title"], job["description"], DateTime.parse(job["mysql_date"]).to_s, "http://workinstartups.com/job-board/job/" + job["id"])
       end
       jobs
     end

@@ -14,7 +14,7 @@ module Adapters
       hiring = subreddit.get_new.select{|obj| obj[:title].downcase.include?"hiring"}
       jobs = Array.new
       hiring.each do |job|
-        jobs << Job.new(source, job[:id], job[:title], job[:selftext], Time.at(job[:created_utc]).to_datetime.to_s, "http://reddit.com" + job[:permalink])
+        jobs << Job.new('reddit:' + source, job[:id], job[:title], job[:selftext], Time.at(job[:created_utc]).to_datetime.to_s, "http://reddit.com" + job[:permalink])
       end
       jobs
     end

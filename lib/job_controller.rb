@@ -7,7 +7,8 @@ class JobController
     # 'reddit:freelance_forhire', 
     'reddit:london_forhire', 
     'workinstartups:co-founder',
-    'workinstartups:programmer'
+    'workinstartups:programmer',
+    'hackernews:jobs'
   ]
   
   def initialize(sources = DEFAULT_SOURCES, format = DEFAULT_FORMAT, number = DEFAULT_NUMBER)
