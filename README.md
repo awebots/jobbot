@@ -11,9 +11,9 @@ JobController is the utility class, an instance of it is held by the JobBot clas
 ##JobGrabber 
 JobGrabber is loops through sources and returns an array of all jobs found at specified sources
 ##SrcGrabber
-SrcGrabber grabs jobs from a specified source, it uses the adapter pattern and has 2 adapters: `reddit.rb` and `workinstartups.rb`.
+SrcGrabber grabs jobs from a specified source, it uses the adapter pattern and has 2 adapters: `reddit.rb`, `workinstartups.rb` and `hackernews.rb`.
 ##Adapters
-We have two adapters for Reddit and WorkInStartups, that use [Redd](https://github.com/avinashbot/redd) and [workinstartups-api](https://github.com/HugoDF/workinstartups-api), respectively.
+We have three adapters for Reddit, WorkInStartups and HNJobs, that use [Redd](https://github.com/avinashbot/redd), [workinstartups-api](https://github.com/HugoDF/workinstartups-api) and [hnjobs](https:github.com/HugoDF), respectively.
 ##Job
 Job is the abstraction to create a unified API for jobs coming from Reddit and WorkInStartups, there is potential for turning this into a adaptor system for jobs coming from other services, it currently only has 6 fields: `origin`, `id`, `title`, `description`, `created_at` and `link`.
 

@@ -3,10 +3,10 @@ class JobController
   DEFAULT_FORMAT = "created_at id title link"
   DEFAULT_NUMBER = 5
   DEFAULT_SOURCES = [ 
-    # 'reddit:forhire', 
+    'reddit:forhire', 
     # 'reddit:freelance_forhire', 
-    'reddit:london_forhire', 
-    'workinstartups:co-founder',
+    # 'reddit:london_forhire', 
+    # 'workinstartups:co-founder',
     'workinstartups:programmer',
     'hackernews:jobs'
   ]
