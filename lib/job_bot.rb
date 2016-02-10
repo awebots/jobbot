@@ -33,7 +33,7 @@ class JobBot < SlackRubyBot::Bot
   command 'jobs refresh' do |client, data, match|
     client.say(text: "Refreshing the jobs, please wait...", channel: data.channel)
     sources = @@job_controller.get_sources
-    @@job_controller = JobGrabber.new(sources)
+    @@job_controller = JobController.new(sources)
     reply = "Refreshed the jobs, there are now " + @@job_controller.get_job_count.to_s + " jobs"
     client.say(text: reply, channel: data.channel)
   end
@@ -65,7 +65,7 @@ class JobBot < SlackRubyBot::Bot
   match /^job (?<id>\w*)$/ do |client, data, match|
     @@job_controller.set_format "id title link description"
     job = @@job_controller.get_job(match[:id])
-    @@job_controller.set_format JobGrabber::DEFAULT_FORMAT
+    @@job_controller.set_format JobController::DEFAULT_FORMAT
     client.say(text: "Job: " + job, channel: data.channel)
   end
   command 'jobs' do |client, data, match|
