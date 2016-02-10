@@ -51,7 +51,7 @@ class JobController
     @jobs.detect{|job| job.id == id}.format(@format)
   end
   def get_by_source source
-    if !@source.include?source
+    if !@sources.include?source
       raise "Source unknown, add it to the source list first"
     end
     @jobs.select{|job| job.origin == source}.sort{|a,b|a.created_at<=>a.created_at}.map{|job| job.format(@format)}
