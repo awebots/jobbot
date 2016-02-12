@@ -7,18 +7,7 @@ class Job
     @created_at = created_at
     @link = link
   end
-  def origin
-    @origin
-  end
-  def id
-    @id
-  end 
-  def description
-    @description
-  end
-  def created_at
-    @created_at
-  end
+  attr_reader :origin, :id, :description, :created_at
   def format format
     formatted =''
     if format.include?"created_at"
