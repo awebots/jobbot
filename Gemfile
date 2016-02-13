@@ -4,4 +4,4 @@ gem "dotenv", "~> 2.1.0"
 gem "slack-ruby-bot"
 gem "chronic"
 gem 'workinstartups-api', '~> 0.0.6'
-gem 'hnjobs', '~>0.0.2'
+gem 'hnjobs', '~>0.0.3'
