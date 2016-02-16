@@ -3,7 +3,7 @@ require 'dotenv'
 Dotenv.load
 
 require 'slack-ruby-bot'
-require_relative 'job_controller'
+require 'job_grabber'
 
 class JobBot < SlackRubyBot::Bot
   def initialize (options = {})
