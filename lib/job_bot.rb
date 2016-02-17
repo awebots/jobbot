@@ -3,11 +3,11 @@ require 'dotenv'
 Dotenv.load
 
 require 'slack-ruby-bot'
-require_relative 'job_controller'
+require 'job-grabber'
 
 class JobBot < SlackRubyBot::Bot
   def initialize (options = {})
-    @@job_controller = JobController.new
+    @@job_controller = JobGrabber::Controller.new
   end
   # source management
   match /^add src:(?<source>\S*)$/ do |client, data, match|
@@ -33,7 +33,7 @@ class JobBot < SlackRubyBot::Bot
   command 'jobs refresh' do |client, data, match|
     client.say(text: "Refreshing the jobs, please wait...", channel: data.channel)
     sources = @@job_controller.get_sources
-    @@job_controller = JobController.new(sources)
+    @@job_controller = JobGrabber::Controller.new(sources)
     reply = "Refreshed the jobs, there are now " + @@job_controller.get_job_count.to_s + " jobs"
     client.say(text: reply, channel: data.channel)
   end
@@ -65,7 +65,7 @@ class JobBot < SlackRubyBot::Bot
   match /^job (?<id>\w*)$/ do |client, data, match|
     @@job_controller.set_format "id title link description"
     job = @@job_controller.get_job(match[:id])
-    @@job_controller.set_format JobController::DEFAULT_FORMAT
+    @@job_controller.set_format JobGrabber::Controller::DEFAULT_FORMAT
     client.say(text: "Job: " + job, channel: data.channel)
   end
   command 'jobs' do |client, data, match|

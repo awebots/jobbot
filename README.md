@@ -7,15 +7,18 @@ Integrates with Job APIs to deliver jobs to people right in Slack.
 ##JobBot 
 JobBot is the SlackBot itself and handles the routing/matching/parsing of commands, it uses [slack-ruby-bot](https://github.com/dblock/slack-ruby-bot)
 ##JobController
-JobController is the utility class, an instance of it is held by the JobBot class. It holds the jobs, sources and filters content before returning it.
+An instance of JobController is held by the JobBot class. It holds the jobs, sources and filters content before returning it.
 ##JobGrabber 
-JobGrabber is loops through sources and returns an array of all jobs found at specified sources
+JobGrabber loops through sources and returns an array of Job objects populated with the data found at specified sources. It currently has adapters for Reddit, Workinstartups and HackerNews Jobs.
 ##SrcGrabber
 SrcGrabber grabs jobs from a specified source, it uses the adapter pattern and has 2 adapters: `reddit.rb`, `workinstartups.rb` and `hackernews.rb`.
 ##Adapters
 We have three adapters for Reddit, WorkInStartups and HNJobs, that use [Redd](https://github.com/avinashbot/redd), [workinstartups-api](https://github.com/HugoDF/workinstartups-api) and [hnjobs](https:github.com/HugoDF), respectively.
 ##Job
-Job is the abstraction to create a unified API for jobs coming from Reddit and WorkInStartups, there is potential for turning this into a adaptor system for jobs coming from other services, it currently only has 6 fields: `origin`, `id`, `title`, `description`, `created_at` and `link`.
+The Job object has the following fields: 
+`origin`, `id`, `title`, `description`, `created_at` and `link`, all returned as strings.
+
+Job is the abstraction to create a unified API for jobs coming from Reddit and WorkInStartups, there is potential for turning this into a adaptor system for jobs coming from other services, it currently only has 6 fields: 
 
 #Setup your own
 You're going to need to clone the repo, you can then proceed to fill out the ENV variables you need a slack custom integration token, a reddit client and secret. 
