@@ -80,6 +80,8 @@ PLATFORMS
 
 DEPENDENCIES
   chronic
+  dotenv
+  eventmachine
   job-grabber (~> 0.0.2)
   slack-ruby-bot
 
